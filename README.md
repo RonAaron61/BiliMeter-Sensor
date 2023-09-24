@@ -25,6 +25,8 @@ TCS 34725 is an RGB sensor, it can detect the value of intensity of RGB and Clea
 
 You just need to connect the vin, gnd, sda, and scl pin to the microcontroller of your choice, but in this project, I use Arduino Uno for simplicity, but later may change it to a smaller microcontroller.
 
+Because this sensor detect RGB color, I only read the Blue intensity
+
 ## schematic
 
 (image)
