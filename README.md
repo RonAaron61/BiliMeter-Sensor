@@ -38,6 +38,8 @@ Implementing on project board using ESP32
 
 ## Result - 1
 
+*Note that I use the sensor with 4x gain to get this data, so there's a limit of the maximum light intensity it can capture, for a wider range of light intensity use 1x gain, but for now I use the 4x gain
+
 I got a couple of data, the first and second were a little off when compared to the BiliBlanket meter, especially at higher intensity. Now at the third data that I collected, I get a decent result (for now)
 
 Example of data that I got: 
@@ -52,15 +54,108 @@ Linear: 0.001x + 0.126
 
 Polynomial: -6E-08x2 + 0.0012x + 0.0338
 
-Then Implementing it to arduino code:
+Then Implementing it to Arduino code:
 
 irr_L = 0.001*int(blue) + 0.126; (Linear)
 
 irr_P = ((-6.0e-08)*pow(int(blue),2)) + (0.0012*(int(blue))) + 0.0338; (polynomial)
 
+--
+
+I tried a couple of times and got 4 different results with different light-intensity data:
+
+float irr_L = (0.001*int(blue)) + 0.3559;
+float irr_L = 0.0011*int(blue) + 0.1497;
+float irr_L = 0.001*int(blue) + 0.126;  //So far best
+float irr_L = 0.0012*int(blue) - 0.0381;
+  
+double irr_P =  ((-2.0e-7)*pow(int(blue),2)) + (0.0019*(int(blue))) - 0.0418;
+double irr_P = ((-2.0e-7)*pow(int(blue),2)) + (0.0015*(int(blue))) + 0.03018;
+double irr_P = ((-6.0e-08)*pow(int(blue),2)) + (0.0012*(int(blue))) + 0.0338; //so far best
+double irr_P = ((5.0e-08)*pow(int(blue),2)) + (0.0009*(int(blue))) + 0.17;
+
 ## Code
 
-For the code I use the example from TCS34725 library, then change it so I get the raw data and input the blue light value to the formula
+For the code I use the example from TCS34725 library, then change it so I get the raw data and input the blue light value to the formula the show the result to oled display
+
+```
+#include <Wire.h>
+#include "Adafruit_TCS34725.h"
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#include <SPI.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_ADDRESS 0x3C
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_4X);  //4X gain - use TCS34725_GAIN_1X for 1x gain
+
+void setup() {
+  Serial.begin(9600);
+  //Serial.println("Color View Test!");
+
+  if (tcs.begin()) {
+    //Serial.println("Found sensor");
+  } else {
+    Serial.println("No TCS34725 found ... check your connections");
+    while (1); // halt!
+  }
+
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+  display.clearDisplay();
+}
+
+void loop() {
+  Serial.print("\n");
+
+  uint16_t red, green, blue, clear;
+  
+  tcs.setInterrupt(false);  // turn on LED
+
+  delay(60);  // takes 50ms to read
+
+  tcs.getRawData(&red, &green, &blue, &clear);
+  
+  tcs.setInterrupt(true);  // turn off LED
+
+  float irr_L = 0.001*int(blue) + 0.126;  //So far best
+
+  double irr_P = ((-6.0e-08)*pow(int(blue),2)) + (0.0012*(int(blue))) + 0.0338;
+  
+  Serial.print("C: "); Serial.print(int(clear)); 
+  //Serial.print("R: "); Serial.print(int(red)); 
+  //Serial.print("G: "); Serial.print(int(green)); 
+  Serial.print(", B: "); Serial.print(int(blue));
+  Serial.print(", Irrediance L: "); Serial.print(irr_L);
+  Serial.print(", Irrediance P: "); Serial.print(irr_P);
+  Serial.println();
+
+  display.clearDisplay();
+
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  
+  display.setCursor(10, 0);
+  display.print("Irr L: ");
+  display.println(irr_L);
+  
+  display.setCursor(10, 10);
+  display.print("Irr P: ");
+  display.println(irr_P);
+  
+  display.setCursor(10,20);
+  display.print("Blue: ");
+  display.println(int(blue));
+  display.display();      // Show initial text
+  delay(100);
+}
+```
 
 --
 
