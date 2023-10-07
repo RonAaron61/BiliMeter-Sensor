@@ -57,6 +57,11 @@ irr_P = ((-6.0e-08)*pow(int(blue),2)) + (0.0012*(int(blue))) + 0.0338; (polynomi
 
 For the code I use the example from TCS34725 library, then change it so I get the raw data and input the blue light value to the formula
 
-## Result
+--
 
--- result
+After a couple of experiments with different light sources (LED light, sunlight, etc.) and getting the equations. I still get different results, because sometimes even when the sensor read with the same value when compared with the BiliBlanket sensor it got a different result. So maybe it still needs some adjustment, and above the sensor can be placed some blue light pass filter
+
+![image](https://github.com/RonAaron61/BiliMeter-Sensor/assets/105662575/38f69f7e-fe08-42d7-9f8c-e2f48820c9a5)
+
+To only let the blue light pass to the sensor, because based on the sensor datasheet the blue sensor still passes some other visible light to the sensor.
+
