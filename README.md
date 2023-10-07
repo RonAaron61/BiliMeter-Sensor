@@ -31,6 +31,11 @@ Because this sensor detect RGB color, I only read the Blue intensity
 
 (image)
 
+Implementing on project board using ESP32
+
+![BlueLightSensor](https://github.com/RonAaron61/BiliMeter-Sensor/assets/105662575/ab3395c2-1541-41be-89ff-bdfb406ae5d1)
+
+
 ## Result - 1
 
 I got a couple of data, the first and second were a little off when compared to the BiliBlanket meter, especially at higher intensity. Now at the third data that I collected, I get a decent result (for now)
