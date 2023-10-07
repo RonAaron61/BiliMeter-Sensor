@@ -65,6 +65,7 @@ Using this formula I get a quite decent result but only from 0-4 µWW/cm2/nm aft
 --
 
 I tried a couple of times and got 4 different results with different light-intensity data:
+
 ```
 Linear
 
@@ -87,6 +88,7 @@ irr_P = ((-6.0e-08)*pow(int(blue),2)) + (0.0012*(int(blue))) + 0.0338; //so far 
 
 irr_P = ((5.0e-08)*pow(int(blue),2)) + (0.0009*(int(blue))) + 0.17;
 ```
+
 ## Code
 
 For the code I use the example from TCS34725 library, then change it so I get the raw data and input the blue light value to the formula the show the result to oled display
