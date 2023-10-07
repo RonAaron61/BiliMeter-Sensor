@@ -60,20 +60,33 @@ irr_L = 0.001*int(blue) + 0.126; (Linear)
 
 irr_P = ((-6.0e-08)*pow(int(blue),2)) + (0.0012*(int(blue))) + 0.0338; (polynomial)
 
+Using this formula I get a quite decent result but only from 0-4 µWW/cm2/nm after that the data becomes increasingly different
+
 --
 
 I tried a couple of times and got 4 different results with different light-intensity data:
+```
+Linear
 
-float irr_L = (0.001*int(blue)) + 0.3559;
-float irr_L = 0.0011*int(blue) + 0.1497;
-float irr_L = 0.001*int(blue) + 0.126;  //So far best
-float irr_L = 0.0012*int(blue) - 0.0381;
-  
-double irr_P =  ((-2.0e-7)*pow(int(blue),2)) + (0.0019*(int(blue))) - 0.0418;
-double irr_P = ((-2.0e-7)*pow(int(blue),2)) + (0.0015*(int(blue))) + 0.03018;
-double irr_P = ((-6.0e-08)*pow(int(blue),2)) + (0.0012*(int(blue))) + 0.0338; //so far best
-double irr_P = ((5.0e-08)*pow(int(blue),2)) + (0.0009*(int(blue))) + 0.17;
+irr_L = (0.001*int(blue)) + 0.3559;
 
+irr_L = 0.0011*int(blue) + 0.1497;
+
+irr_L = 0.001*int(blue) + 0.126;  //So far best
+
+irr_L = 0.0012*int(blue) - 0.0381;
+
+
+Polynomial
+
+irr_P =  ((-2.0e-7)*pow(int(blue),2)) + (0.0019*(int(blue))) - 0.0418;
+
+irr_P = ((-2.0e-7)*pow(int(blue),2)) + (0.0015*(int(blue))) + 0.03018;
+
+irr_P = ((-6.0e-08)*pow(int(blue),2)) + (0.0012*(int(blue))) + 0.0338; //so far best
+
+irr_P = ((5.0e-08)*pow(int(blue),2)) + (0.0009*(int(blue))) + 0.17;
+```
 ## Code
 
 For the code I use the example from TCS34725 library, then change it so I get the raw data and input the blue light value to the formula the show the result to oled display
