@@ -29,7 +29,8 @@ Because this sensor detect RGB color, I only read the Blue intensity
 
 ## schematic
 
-(image)
+![image](https://github.com/RonAaron61/BiliMeter-Sensor/assets/105662575/3606c97d-30ec-4805-89a4-3b46459bd56c)
+
 
 Implementing on project board using ESP32
 
