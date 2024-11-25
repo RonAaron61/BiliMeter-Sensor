@@ -181,3 +181,118 @@ After a couple of experiments with different light sources (LED light, sunlight,
 
 To only let the blue light pass to the sensor, because based on the sensor datasheet the blue sensor still passes some other visible light to the sensor.
 
+---
+
+Update, After using a blue LED and comparing it to BiliBlanket from 3.6 µWW/cm2/nm to ±36 µWW/cm2/nm, I got another formula:
+
+Linear = $$0.101 X + 0.2461$$
+
+Polynomial = $$5.0 e^{-8 X^2} + 0.0099 X + 0.3683$$
+
+![image](https://github.com/user-attachments/assets/1ad6d1db-9426-482d-a0e0-6b7cd2765f75)
+
+---
+
+And also I add a button to pause the sensor intensity reading
+
+```
+#include <Wire.h>
+#include "Adafruit_TCS34725.h"
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#include <SPI.h>
+#include <driver/adc.h>
+
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+Adafruit_TCS34725 tcs = Adafruit_TCS34725(TCS34725_INTEGRATIONTIME_50MS, TCS34725_GAIN_1X);
+
+bool Pause = 0;
+
+void setup() {
+  Serial.begin(9600);
+
+  adc1_config_width(ADC_WIDTH_BIT_12);
+  adc1_config_channel_atten(ADC1_CHANNEL_4, ADC_ATTEN_DB_11);
+
+  if (tcs.begin()) {
+    //Serial.println("Found sensor");
+  } else {
+    Serial.println("No TCS34725 found ... check your connections");
+    while (1); // halt!
+  }
+
+  if(!display.begin(SSD1306_SWITCHCAPVCC, SCREEN_ADDRESS)) {
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;); // Don't proceed, loop forever
+  }
+  display.clearDisplay();
+}
+
+void loop() {
+  
+  if ((adc1_get_raw((adc1_channel_t)4)) > 1000){
+    Pause = !Pause;
+    delay(500);
+  }
+  
+  if (!Pause) {
+    uint16_t red, green, blue, clear;
+    float red2, green2, blue2;
+  
+    tcs.setInterrupt(false);  // turn on LED
+
+    delay(60);  // takes 50ms to read
+
+    tcs.getRawData(&red, &green, &blue, &clear);
+    tcs.getRGB(&red2, &green2, &blue2);
+  
+    tcs.setInterrupt(true);  // turn off LED
+
+    float irr_L = 0.0101*int(blue) + 0.2461; 
+    double irr_P = ((5.0e-8)*pow(int(blue),2)) + (0.0099*(int(blue))) + 0.3683; 
+
+
+    display.clearDisplay();
+
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+  
+    display.setCursor(0, 0);
+    display.print("Irr L: ");
+    display.println(irr_L);
+  
+    display.setCursor(0, 10);
+    display.print("Irr P: ");
+    display.println(irr_P);
+
+    display.setCursor(0, 20);
+    display.print("Ave : ");
+    display.println((irr_P + irr_L)/2);
+  
+    display.setTextSize(1);
+    display.setCursor(0,30);
+    display.print("Blue1: ");
+    display.setTextSize(2);
+    display.println(int(blue));
+
+    display.setTextSize(1);
+    display.setCursor(0,45);
+    display.print("Blue2: ");
+    display.setTextSize(2);
+    display.print(int(blue2));
+    display.display();     
+    delay(40);
+  }
+  else{
+    display.display();  
+    display.setTextSize(1);
+    display.setCursor(80,55);
+    display.print("Pause");
+  }
+}
+```
