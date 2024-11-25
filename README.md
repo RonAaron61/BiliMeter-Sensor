@@ -185,7 +185,7 @@ To only let the blue light pass to the sensor, because based on the sensor datas
 
 Update, After using a blue LED and comparing it to BiliBlanket from 3.6 µWW/cm2/nm to ±36 µWW/cm2/nm, I got another formula:
 
-Linear = $$0.101 X + 0.2461$$
+Linear = $$0.0101 X + 0.2461$$
 
 Polynomial = $$5.0 e^{-8 X^2} + 0.0099 X + 0.3683$$
 
